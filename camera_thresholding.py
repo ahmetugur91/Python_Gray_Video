@@ -1,4 +1,5 @@
 import cv2
+import time
 
 cap = cv2.VideoCapture(0)
 
@@ -33,6 +34,7 @@ while True:
     if screenCnt is not None:
         cv2.drawContours(image, [screenCnt], -1, (0, 255, 0), 2)
         cv2.imshow("", image)
+        cv2.imwrite("images/" + time.time() + ".jpg", image)
 
     if cv2.waitKey(20) & 0xFF == ord('q'):
         break
