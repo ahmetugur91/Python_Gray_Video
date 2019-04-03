@@ -15,6 +15,7 @@ edged = cv2.Canny(gray, 75, 200)
 cnts = sorted(cnts, key=cv2.contourArea, reverse=True)[:5]
 
 # loop over the contours
+screenCnt = None
 for c in cnts:
     # approximate the contour
     peri = cv2.arcLength(c, True)
@@ -26,7 +27,9 @@ for c in cnts:
         screenCnt = approx
         break
 
-cv2.drawContours(image, [screenCnt], -1, (0, 255, 0), 2)
+if screenCnt is not None:
+    cv2.drawContours(image, [screenCnt], -1, (0, 255, 0), 2)
 
+print(screenCnt)
 cv2.imshow("", image)
 cv2.waitKey(0)
