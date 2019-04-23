@@ -10,8 +10,25 @@ def roundto(number):
     return int(number)
 
 
+def line_intersection(line1, line2):
+    xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
+    ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
+
+    def det(a, b):
+        return a[0] * b[1] - a[1] * b[0]
+
+    div = det(xdiff, ydiff)
+    if div == 0:
+        raise Exception('lines do not intersect')
+
+    d = (det(*line1), det(*line2))
+    x = det(d, xdiff) / div
+    y = det(d, ydiff) / div
+    return x, y
+
+
 # load the image
-image = cv2.imread("3.jpg", 1)
+image = cv2.imread("4.jpg", 1)
 image = cv2.resize(image, (500, 800))
 # white color boundaries (R,B and G)
 lower = [120, 120, 120]
@@ -58,33 +75,54 @@ if len(contours) != 0:
     # cv2.line(image, point1, point3, 255, 1)
     # cv2.line(image, point2, point4, 255, 1)
 
-    topLen = int(math.sqrt(math.pow(point1[0] - point3[0], 2) - math.pow(point1[1] - point3[1], 2)))
+    topLen = int(math.sqrt(abs(math.pow(point1[0] - point3[0], 2) - math.pow(point1[1] - point3[1], 2))))
     topPieceLen = int(topLen / 15)
 
-    bottomLen = int(math.sqrt(math.pow(point2[0] - point4[0], 2) - math.pow(point2[1] - point4[1], 2)))
+    bottomLen = int(math.sqrt(abs(math.pow(point2[0] - point4[0], 2) - math.pow(point2[1] - point4[1], 2))))
     bottomPieceLen = int(bottomLen / 15)
 
-    print("topLen = " + str(topLen) + ", bottomLen = " + str(bottomLen))
-    print("topPieceLen = " + str(topPieceLen) + ", bottomPieceLen = " + str(bottomPieceLen))
+    leftLen = int(math.sqrt(abs(math.pow(point1[0] - point2[0], 2) - math.pow(point1[1] - point2[1], 2))))
+    leftPieceLen = int(leftLen / 15)
 
-    a = roundto((point3[0] - point1[0]) / 15)
-    b = roundto((point3[1] - point1[1]) / 15)
+    rightLen = int(math.sqrt(abs(math.pow(point3[0] - point4[0], 2) - math.pow(point3[1] - point4[1], 2))))
+    rightPieceLen = int(rightLen / 15)
 
-    q = roundto((point4[0] - point2[0]) / 15)
-    w = roundto((point4[1] - point2[1]) / 15)
+    print("topLen = " + str(topLen) + ", bottomLen = " + str(bottomLen) + ", leftLen = " + str(leftLen) + ", rightLen = " + str(rightLen))
+    print("topPieceLen = " + str(topPieceLen) + ", bottomPieceLen = " + str(bottomPieceLen) + ", leftPieceLen = " + str(leftPieceLen) + ", rightPieceLen = " + str(rightPieceLen))
 
-    for i in range(1, 15, 1):
+    topPieceLenX = roundto((point3[0] - point1[0]) / 15)
+    topPieceLenY = roundto((point3[1] - point1[1]) / 15)
+
+    bottomPieceLenX = roundto((point4[0] - point2[0]) / 15)
+    bottomPieceLenY = roundto((point4[1] - point2[1]) / 15)
+
+    leftPieceLenX = roundto((point2[0] - point1[0]) / 15)
+    leftPieceLenY = roundto((point2[1] - point1[1]) / 15)
+
+    rightPieceLenX = roundto((point4[0] - point3[0]) / 15)
+    rightPieceLenY = roundto((point4[1] - point3[1]) / 15)
+
+    for xrow in range(1, 15, 1):
         # print(i)
-        pointDotTop = (point1[0] + i * a, point1[1] + i * b)
-        pointDotBottom = (point2[0] + i * q, point2[1] + i * w)
+        pointDotLeft = (point1[0] + xrow * leftPieceLenX, point1[1] + xrow * leftPieceLenY)
+        pointDotRight = (point3[0] + xrow * rightPieceLenX, point3[1] + xrow * rightPieceLenY)
 
-        print(pointDotTop, pointDotBottom)
-        cv2.line(image, pointDotTop, pointDotBottom, 255, 1)
+        for yrow in range(1,15,1):
+            pointDotTop = (point1[0] + yrow * topPieceLenX, point1[1] + yrow * topPieceLenY)
+            pointDotBottom = (point2[0] + yrow * bottomPieceLenX, point2[1] + yrow * bottomPieceLenY)
 
-        cv2.circle(image, pointDotTop, 1, (0, 0, 255), -1)
-        cv2.circle(image, pointDotBottom, 1, (0, 0, 255), -1)
+            # print(pointDotTop, pointDotBottom)
+            # cv2.line(image, pointDotTop, pointDotBottom, 255, 1)
+            # cv2.line(image, pointDotLeft, pointDotRight, 255, 1)
 
+            cv2.circle(image, pointDotTop, 1, (0, 0, 255), -1)
+            cv2.circle(image, pointDotBottom, 1, (0, 0, 255), -1)
+            cv2.circle(image, pointDotLeft, 1, (0, 0, 255), -1)
+            cv2.circle(image, pointDotRight, 1, (0, 0, 255), -1)
 
+            x, y = line_intersection((pointDotTop, pointDotBottom), (pointDotLeft, pointDotRight))
+            cv2.circle(image, (roundto(x), roundto(y)), 1, (255, 0 , 0), -1)
+            print(x, y)
 
     # middleTopX = int((point1[0] + point3[0]) / 2)
     # middleTopY = int((point1[1] + point3[1]) / 2)
