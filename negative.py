@@ -28,15 +28,17 @@ def line_intersection(line1, line2):
     return x, y
 
 
-showCornerPoints = False
+showPointDots = False
+showCornerPoints = True
 showIndexNumbers = False
 showCenterDots = True
-drawLines = False
-drawBorders = True
+drawGridLines = True
+showBorders = True
+showIntersectionPoints = False
 
 # load the image
-image = cv2.imread("1.jpg", 1)
-image = cv2.resize(image, (500, 800))
+image = cv2.imread("1_dot.jpg", 1)
+image = cv2.resize(image, (800, 1000))
 image_original = copy.copy(image)
 # white color boundaries (R,B and G)
 lower = [120, 120, 120]
@@ -65,88 +67,87 @@ if len(contours) != 0:
     # draw in blue the contours that were founded
     c = max(contours, key=cv2.contourArea)
 
+    # get corner points
     epsilon = 0.1 * cv2.arcLength(c, True)
     approx = cv2.approxPolyDP(c, epsilon, True)
-
     # print(approx)
 
-    point1 = (approx[0][0][0], approx[0][0][1])
-    point2 = (approx[1][0][0], approx[1][0][1])
-    point3 = (approx[3][0][0], approx[3][0][1])
-    point4 = (approx[2][0][0], approx[2][0][1])
+    cornerPoint1 = (approx[0][0][0], approx[0][0][1])
+    cornerPoint2 = (approx[1][0][0], approx[1][0][1])
+    cornerPoint3 = (approx[3][0][0], approx[3][0][1])
+    cornerPoint4 = (approx[2][0][0], approx[2][0][1])
 
     if showCornerPoints:
-        cv2.circle(image, point1, 5, (0, 0, 255), -1)
-        cv2.circle(image, point2, 5, (0, 0, 255), -1)
-        cv2.circle(image, point3, 5, (0, 0, 255), -1)
-        cv2.circle(image, point4, 5, (0, 0, 255), -1)
+        cv2.circle(image, cornerPoint1, 5, (0, 0, 255), -1)
+        cv2.circle(image, cornerPoint2, 5, (0, 0, 255), -1)
+        cv2.circle(image, cornerPoint3, 5, (0, 0, 255), -1)
+        cv2.circle(image, cornerPoint4, 5, (0, 0, 255), -1)
 
-    # cv2.line(image, point1, point2, 255, 5)
-    # cv2.line(image, point3, point4, 255, 5)
-    #
-    # cv2.line(image, point1, point3, 255, 1)
-    # cv2.line(image, point2, point4, 255, 1)
+    if showBorders:
+        cv2.line(image, cornerPoint1, cornerPoint2, 255, 2)
+        cv2.line(image, cornerPoint3, cornerPoint4, 255, 2)
+        cv2.line(image, cornerPoint1, cornerPoint3, 255, 2)
+        cv2.line(image, cornerPoint2, cornerPoint4, 255, 2)
 
-    topLen = int(math.sqrt(abs(math.pow(point1[0] - point3[0], 2) - math.pow(point1[1] - point3[1], 2))))
-    topPieceLen = int(topLen / 15)
-
-    bottomLen = int(math.sqrt(abs(math.pow(point2[0] - point4[0], 2) - math.pow(point2[1] - point4[1], 2))))
-    bottomPieceLen = int(bottomLen / 15)
-
-    leftLen = int(math.sqrt(abs(math.pow(point1[0] - point2[0], 2) - math.pow(point1[1] - point2[1], 2))))
-    leftPieceLen = int(leftLen / 15)
-
-    rightLen = int(math.sqrt(abs(math.pow(point3[0] - point4[0], 2) - math.pow(point3[1] - point4[1], 2))))
-    rightPieceLen = int(rightLen / 15)
+    topLen = int(math.sqrt(abs(math.pow(cornerPoint1[0] - cornerPoint3[0], 2) - math.pow(cornerPoint1[1] - cornerPoint3[1], 2))))
+    bottomLen = int(math.sqrt(abs(math.pow(cornerPoint2[0] - cornerPoint4[0], 2) - math.pow(cornerPoint2[1] - cornerPoint4[1], 2))))
+    leftLen = int(math.sqrt(abs(math.pow(cornerPoint1[0] - cornerPoint2[0], 2) - math.pow(cornerPoint1[1] - cornerPoint2[1], 2))))
+    rightLen = int(math.sqrt(abs(math.pow(cornerPoint3[0] - cornerPoint4[0], 2) - math.pow(cornerPoint3[1] - cornerPoint4[1], 2))))
 
     print("topLen = " + str(topLen) + ", bottomLen = " + str(bottomLen) + ", leftLen = " + str(leftLen) + ", rightLen = " + str(rightLen))
-    print("topPieceLen = " + str(topPieceLen) + ", bottomPieceLen = " + str(bottomPieceLen) + ", leftPieceLen = " + str(leftPieceLen) + ", rightPieceLen = " + str(rightPieceLen))
 
-    topPieceLenX = roundto((point3[0] - point1[0]) / 15)
-    topPieceLenY = roundto((point3[1] - point1[1]) / 15)
+    topPieceLenX = roundto((cornerPoint3[0] - cornerPoint1[0]) / 15)
+    topPieceLenY = roundto((cornerPoint3[1] - cornerPoint1[1]) / 15)
 
-    bottomPieceLenX = roundto((point4[0] - point2[0]) / 15)
-    bottomPieceLenY = roundto((point4[1] - point2[1]) / 15)
+    bottomPieceLenX = roundto((cornerPoint4[0] - cornerPoint2[0]) / 15)
+    bottomPieceLenY = roundto((cornerPoint4[1] - cornerPoint2[1]) / 15)
 
-    leftPieceLenX = roundto((point2[0] - point1[0]) / 15)
-    leftPieceLenY = roundto((point2[1] - point1[1]) / 15)
+    leftPieceLenX = roundto((cornerPoint2[0] - cornerPoint1[0]) / 15)
+    leftPieceLenY = roundto((cornerPoint2[1] - cornerPoint1[1]) / 15)
 
-    rightPieceLenX = roundto((point4[0] - point3[0]) / 15)
-    rightPieceLenY = roundto((point4[1] - point3[1]) / 15)
+    rightPieceLenX = roundto((cornerPoint4[0] - cornerPoint3[0]) / 15)
+    rightPieceLenY = roundto((cornerPoint4[1] - cornerPoint3[1]) / 15)
 
     for yrow in range(0, 16, 1):
-        pointDotTop = (point1[0] + yrow * topPieceLenX, point1[1] + yrow * topPieceLenY)
+        pointDotTop = (cornerPoint1[0] + yrow * topPieceLenX, cornerPoint1[1] + yrow * topPieceLenY)
         intersectionPoints.append(pointDotTop)
-        cv2.circle(image, pointDotTop, 1, (255, 0, 0), -1)
+        if showIndexNumbers:
+            cv2.circle(image, pointDotTop, 1, (255, 0, 0), -1)
 
     for xrow in range(1, 16, 1):
         # print(i)
-        pointDotLeft = (point1[0] + xrow * leftPieceLenX, point1[1] + xrow * leftPieceLenY)
-        pointDotRight = (point3[0] + xrow * rightPieceLenX, point3[1] + xrow * rightPieceLenY)
+        pointDotLeft = (cornerPoint1[0] + xrow * leftPieceLenX, cornerPoint1[1] + xrow * leftPieceLenY)
+        pointDotRight = (cornerPoint3[0] + xrow * rightPieceLenX, cornerPoint3[1] + xrow * rightPieceLenY)
 
         intersectionPoints.append(pointDotLeft)
-        cv2.circle(image, pointDotLeft, 1, (255, 0, 0), -1)
+
+        if showPointDots:
+            cv2.circle(image, pointDotLeft, 1, (255, 0, 0), -1)
 
         for yrow in range(1, 15, 1):
-            pointDotTop = (point1[0] + yrow * topPieceLenX, point1[1] + yrow * topPieceLenY)
-            pointDotBottom = (point2[0] + yrow * bottomPieceLenX, point2[1] + yrow * bottomPieceLenY)
+            pointDotTop = (cornerPoint1[0] + yrow * topPieceLenX, cornerPoint1[1] + yrow * topPieceLenY)
+            pointDotBottom = (cornerPoint2[0] + yrow * bottomPieceLenX, cornerPoint2[1] + yrow * bottomPieceLenY)
 
             # print(pointDotTop, pointDotBottom)
-            cv2.line(image, pointDotTop, pointDotBottom, 255, 1)
-            cv2.line(image, pointDotLeft, pointDotRight, 255, 1)
+            if drawGridLines:
+                cv2.line(image, pointDotTop, pointDotBottom, 255, 1)
+                cv2.line(image, pointDotLeft, pointDotRight, 255, 1)
 
-            cv2.circle(image, pointDotTop, 1, (0, 0, 255), -1)
-            cv2.circle(image, pointDotBottom, 1, (0, 0, 255), -1)
-            cv2.circle(image, pointDotLeft, 1, (0, 0, 255), -1)
-            cv2.circle(image, pointDotRight, 1, (0, 0, 255), -1)
+            if showPointDots:
+                cv2.circle(image, pointDotTop, 1, (0, 0, 255), -1)
+                cv2.circle(image, pointDotBottom, 1, (0, 0, 255), -1)
+                cv2.circle(image, pointDotLeft, 1, (0, 0, 255), -1)
+                cv2.circle(image, pointDotRight, 1, (0, 0, 255), -1)
 
             x, y = line_intersection((pointDotTop, pointDotBottom), (pointDotLeft, pointDotRight))
-            cv2.circle(image, (roundto(x), roundto(y)), 1, (255, 0, 0), -1)
             intersectionPoints.append((roundto(x), roundto(y)))
+            if showIntersectionPoints:
+                cv2.circle(image, (roundto(x), roundto(y)), 1, (255, 0, 0), -1)
             # print(x, y)
 
         intersectionPoints.append(pointDotRight)
-        cv2.circle(image, pointDotRight, 1, (255, 0, 0), -1)
+        if showPointDots:
+            cv2.circle(image, pointDotRight, 1, (255, 0, 0), -1)
 
     # middleTopX = int((point1[0] + point3[0]) / 2)
     # middleTopY = int((point1[1] + point3[1]) / 2)
@@ -171,39 +172,39 @@ if len(contours) != 0:
 # show the images
 # cv2.imshow("Result", np.hstack([image, output]))
 
-# for index numbers on image
-counter = 0
-for point in intersectionPoints:
-    print(point)
+if showIndexNumbers:
+    counter = 0
+    for point in intersectionPoints:
+        # print(point)
+        cv2.putText(image, str(counter), point, cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 0), 1)
+        counter = counter + 1
 
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    fontScale = 0.3
-    fontColor = (0, 255, 255)
-    lineType = 1
-
-    cv2.putText(image, str(counter),
-                point,
-                font,
-                fontScale,
-                fontColor,
-                lineType)
-
-    counter = counter + 1
-
+matrix = []
+matrixRow = []
 for row in range(0, 15, 1):
+    matrixRow = []
     for col in range(0, 15, 1):
         current = col + row * 16
-        point1 = intersectionPoints[current]
-        point2 = intersectionPoints[current + 17]
+        cornerPoint1 = intersectionPoints[current]
+        cornerPoint2 = intersectionPoints[current + 17]
         # cv2.line(image, point1, point2, 200, 1)
-        middleX = int((point1[0] + point2[0]) / 2)
-        middleY = int((point1[1] + point2[1]) / 2)
-        cv2.circle(image, (middleX, middleY), 1, (255, 0, 0), -1)
+        middleX = int((cornerPoint1[0] + cornerPoint2[0]) / 2)
+        middleY = int((cornerPoint1[1] + cornerPoint2[1]) / 2)
+        if showCenterDots:
+            cv2.circle(image, (middleX, middleY), 1, (255, 0, 0), -1)
+        # print(image_original[middleY, middleX])
+        rgb = image_original[middleY, middleX]
+        matrixRow.append((rgb[0], rgb[1], rgb[2]))
+    matrix.append(matrixRow)
 
+# print(matrix)
+for row in matrix:
+    print(row)
 # cropped = image_original[100:200, 140:440]
 # cv2.imshow("cropped", cropped)
 
 
+cv2.imshow('Original Image', image_original)
 cv2.imshow('Processed', image)
 # cv2.imshow("Cropped", output)
 
