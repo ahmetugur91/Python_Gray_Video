@@ -37,7 +37,8 @@ showBorders = True
 showIntersectionPoints = False
 
 # load the image
-image = cv2.imread("1_dot.jpg", 1)
+image = cv2.imread("4.jpg", 1)
+# image = cv2.imread("1_dot.jpg", 1)
 image = cv2.resize(image, (800, 1000))
 image_original = copy.copy(image)
 # white color boundaries (R,B and G)
