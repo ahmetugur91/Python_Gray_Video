@@ -1,3 +1,6 @@
+from os import sys, path
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+
 import math
 import copy
 import numpy as np
@@ -30,11 +33,11 @@ def line_intersection(line1, line2):
 
 
 def color_from_rgb(r, g, b):
-    if r < 50 and g < 50 and b > 125:
+    if r < 100 and g < 100 and b > 125:
         return "blue"
-    if r < 50 and g > 125 and b < 50:
+    if r < 100 and g > 125 and b < 100:
         return "green"
-    if r > 120 and g < 50 and b < 50:
+    if r > 120 and g < 100 and b < 100:
         return "red"
     if r > 120 and g > 120 and b > 120:
         return "white"
@@ -50,13 +53,6 @@ def player_decision(r, g, b):
     return -1
 
 
-r = 237
-g = 27
-b = 35
-
-clr = color_from_rgb(r, g, b)
-player = player_decision(r, g, b)
-
 showPointDots = False
 showCornerPoints = True
 showIndexNumbers = False
@@ -66,7 +62,7 @@ showBorders = True
 showIntersectionPoints = False
 
 # load the image
-image = cv2.imread("11.jpg", 1)
+image = cv2.imread("22.jpg", 1)
 # image = cv2.imread("1_dot.jpg", 1)
 image = cv2.resize(image, (800, 1000))
 image_original = copy.copy(image)
@@ -330,31 +326,31 @@ for row in range(0, 15, 1):
         # print(image_original[middleY, middleX])
 
         rgb = image_original[middleY, middleX]
-        centerColors.append((rgb[0], rgb[1], rgb[2]))
+        centerColors.append((rgb[2], rgb[1], rgb[0]))
 
         rgb = image_original[middleY + 1, middleX + 1]
         cv2.circle(image, (middleX + 1, middleY + 1), 1, (255, 0, 0), -1)
-        centerColors.append((rgb[0], rgb[1], rgb[2]))
+        centerColors.append((rgb[2], rgb[1], rgb[0]))
 
         rgb = image_original[middleY - 1, middleX - 1]
         cv2.circle(image, (middleX - 1, middleY - 1), 1, (255, 0, 0), -1)
-        centerColors.append((rgb[0], rgb[1], rgb[2]))
+        centerColors.append((rgb[2], rgb[1], rgb[0]))
 
         rgb = image_original[middleY, middleX + 1]
         cv2.circle(image, (middleX, middleY + 1), 1, (255, 0, 0), -1)
-        centerColors.append((rgb[0], rgb[1], rgb[2]))
+        centerColors.append((rgb[2], rgb[1], rgb[0]))
 
         rgb = image_original[middleY, middleX - 1]
         cv2.circle(image, (middleX, middleY - 1), 1, (255, 0, 0), -1)
-        centerColors.append((rgb[0], rgb[1], rgb[2]))
+        centerColors.append((rgb[2], rgb[1], rgb[0]))
 
         rgb = image_original[middleY + 1, middleX]
         cv2.circle(image, (middleX + 1, middleY), 1, (255, 0, 0), -1)
-        centerColors.append((rgb[0], rgb[1], rgb[2]))
+        centerColors.append((rgb[2], rgb[1], rgb[0]))
 
         rgb = image_original[middleY - 1, middleX]
         cv2.circle(image, (middleX - 1, middleY), 1, (255, 0, 0), -1)
-        centerColors.append((rgb[0], rgb[1], rgb[2]))
+        centerColors.append((rgb[2], rgb[1], rgb[0]))
 
         matrixRow.append(centerColors)
 
